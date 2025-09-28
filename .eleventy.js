@@ -55,6 +55,65 @@ module.exports = function(eleventyConfig) {
     return `<img class="my-4" src="/assets/img/posts/${filename}" alt="${alt}" />`
   })
 
+// Categories collection - simplified
+eleventyConfig.addCollection("categoryList", function(collection) {
+  let categories = new Set();
+  
+  // Get all posts
+  const posts = collection.getFilteredByTag("posts");
+  
+  posts.forEach(post => {
+    if (post.data.categories) {
+      let postCategories = post.data.categories;
+      
+      // Handle both string and array
+      if (typeof postCategories === 'string') {
+        postCategories = [postCategories];
+      }
+      
+      if (Array.isArray(postCategories)) {
+        postCategories.forEach(cat => {
+          if (cat && typeof cat === 'string') {
+            categories.add(cat);
+          }
+        });
+      }
+    }
+  });
+  
+  return Array.from(categories).sort();
+});
+
+// Posts by category
+eleventyConfig.addCollection("postsByCategory", function(collection) {
+  const categoryMap = {};
+  const posts = collection.getFilteredByTag("posts");
+  
+  posts.forEach(post => {
+    if (post.data.categories && !post.data.draft) {
+      let postCategories = post.data.categories;
+      
+      if (typeof postCategories === 'string') {
+        postCategories = [postCategories];
+      }
+      
+      if (Array.isArray(postCategories)) {
+        postCategories.forEach(category => {
+          if (category && typeof category === 'string') {
+            if (!categoryMap[category]) {
+              categoryMap[category] = [];
+            }
+            categoryMap[category].push(post);
+          }
+        });
+      }
+    }
+  });
+  
+  return categoryMap;
+});
+
+
   return {
     dir: {
       input: 'src'

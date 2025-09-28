@@ -23,8 +23,23 @@ layout: main
   {% endfor %}
   </div>
 
+  <!-- Di post.liquid, tambahkan setelah tags -->
+
+<div class="mt-3 pb-10">
+  {% for category in categories %}
+    {% if categories %}
+      <a href="/categories/{{ category }}/">
+        <span class="post-tag">{{ category }}</span>
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+
+
 <div class="prose dark:prose-invert hover:prose-a:text-blue-500">
   {{ content }}
 </div>
 
-{% include "author.liquid" %}
+
+
+{% include "author.liquid" %} 
